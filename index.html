@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Reconhecimento Facial</title>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.faceio.net/fio.js"></script>
+  </head>
+  <body>
+    <h2>Reconhecimento Facial</h2>
+    <button onclick="reconhecer()">Iniciar Reconhecimento</button>
+
+    <script>
+      const faceio = new faceIO("fioae8c1"); // seu PUBLIC_ID do FaceIO
+
+      function reconhecer() {
+        faceio.authenticate({ locale: "auto" })
+          .then(userInfo => {
+            console.log("Reconhecido:", userInfo);
+
+            fetch("https://script.google.com/macros/s/AKfycbzfUGliTR_MWK9siFf81wpZNLu6FqXpLtFcm7SVUnkT3uWkjfSr9OR2N3vBPc-Mrv_Z/exec", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                nome: userInfo.payload.name || "",
+                email: userInfo.payload.email || "",
+                uid: userInfo.facialId,
+                evento: "Reconhecido"
+              })
+            }).then(() => {
+              alert("Reconhecimento enviado com sucesso!");
+            }).catch(err => {
+              alert("Erro ao enviar: " + err);
+            });
+          })
+          .catch(err => {
+            alert("Erro no reconhecimento: " + err);
+          });
+      }
+    </script>
+  </body>
+</html>
